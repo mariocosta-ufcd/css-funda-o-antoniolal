@@ -49,7 +49,6 @@ fi
 # Resultado final
 if $pass; then
   echo "🎉 Todos os testes passaram para o exercício 01"
-  exit 0
 else
   echo "❌ Alguns testes falharam no exercício 01"
   exit 1

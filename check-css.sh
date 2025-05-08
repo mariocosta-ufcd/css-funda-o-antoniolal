@@ -65,7 +65,7 @@ echo "🔍 Verificando exercício 02 - Selectores de Classe e ID..."
 pass=true
 
 # Verifica se existe uma classe partilhada entre elementos ímpares
-if grep -q 'class="[^"]*odd[^"]*"' "$html_file"; then
+if grep -q 'class="[^"]*\bodd\b[^"]*"' "$html_file"; then
   echo "✅ Classe comum encontrada para elementos ímpares"
 else
   echo "❌ Classe comum para elementos ímpares não encontrada"
@@ -80,40 +80,47 @@ else
   pass=false
 fi
 
-# Verifica se o terceiro elemento tem múltiplas classes
-if grep -E 'class="[^"]*odd[^"]*[^"]*larger[^"]*"' "$html_file"; then
+# Verifica se o terceiro elemento tem múltiplas classes (odd + larger)
+if grep -Eq 'class="[^"]*\b(odd|larger)\b[^"]*\b(odd|larger)\b[^"]*"' "$html_file"; then
   echo "✅ Terceiro elemento com múltiplas classes"
 else
   echo "❌ Terceiro elemento não tem múltiplas classes"
   pass=false
 fi
 
-# Verifica se a classe comum tem o estilo correto no CSS
-if grep -E '\.odd\s*\{[^}]*background[^:]*:[^;]*#[a-fA-F0-9]{3,6}[^;]*;[^}]*font-family[^}]*Verdana' "$css_file" > /dev/null; then
+# Verifica estilos da classe .odd
+odd_block=$(awk '/\.odd\s*\{/,/\}/' "$css_file")
+if echo "$odd_block" | grep -q 'background-color:\s*#ffc0cb' &&
+   echo "$odd_block" | grep -Eq 'font-family:\s*(Verdana|[^;]*DejaVu Sans)'; then
   echo "✅ Estilos corretos aplicados à classe comum (ímpar)"
 else
   echo "❌ Estilos ausentes ou incorretos na classe comum"
   pass=false
 fi
 
-# Verifica se o segundo elemento tem a cor e tamanho de fonte corretos
-if grep -E '#second\s*\{[^}]*color[^:]*:[^;]*[^;]*;[^}]*font-size[^:]*:[^;]*36px' "$css_file" > /dev/null; then
+# Verifica estilos de #second (cor azul e tamanho 36px)
+second_block=$(awk '/#second\s*\{/,/\}/' "$css_file")
+if echo "$second_block" | grep -Eq 'color:\s*(rgb\(0, *0, *255\)|blue)' &&
+   echo "$second_block" | grep -q 'font-size:\s*36px'; then
   echo "✅ Estilos corretos aplicados ao segundo elemento"
 else
   echo "❌ Estilos ausentes ou incorretos no segundo elemento"
   pass=false
 fi
 
-# Verifica se o terceiro elemento tem tamanho 24px
-if grep -E '\.larger\s*\{[^}]*font-size[^:]*:[^;]*24px' "$css_file" > /dev/null; then
+# Verifica se a classe .larger aplica 24px
+if awk '/\.larger\s*\{/,/\}/' "$css_file" | grep -q 'font-size:\s*24px'; then
   echo "✅ Tamanho 24px aplicado à classe adicional do terceiro elemento"
 else
   echo "❌ Tamanho 24px ausente na classe do terceiro elemento"
   pass=false
 fi
 
-# Verifica se o quarto elemento está em negrito com fundo verde-claro
-if grep -E '#fourth\s*\{[^}]*background[^:]*:[^;]*[^;]*;[^}]*font-size[^:]*:[^;]*24px[^}]*font-weight[^:]*:[^;]*bold' "$css_file" > /dev/null; then
+# Verifica estilos de #fourth (fundo verde, 24px, bold)
+fourth_block=$(awk '/#fourth\s*\{/,/\}/' "$css_file")
+if echo "$fourth_block" | grep -Eq 'background-color:\s*hsl\(120, *73%, *75%\)' &&
+   echo "$fourth_block" | grep -q 'font-size:\s*24px' &&
+   echo "$fourth_block" | grep -q 'font-weight:\s*bold'; then
   echo "✅ Estilos corretos aplicados ao quarto elemento"
 else
   echo "❌ Estilos ausentes ou incorretos no quarto elemento"

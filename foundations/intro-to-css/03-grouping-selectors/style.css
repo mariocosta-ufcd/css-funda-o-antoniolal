@@ -1,0 +1,17 @@
+/* Estilos comuns para ambos os botões */
+.item1, .item2 {
+    font-family: Helvetica, 'Times New Roman', sans-serif;
+    font-size: 28px;
+  }
+  
+  /* Estilo exclusivo para o primeiro botão (item1) */
+  .item1 {
+    background-color: black;
+    color: white;
+  }
+  
+  /* Estilo exclusivo para o segundo botão (item2) */
+  .item2 {
+    background-color: yellow;
+  }
+  
